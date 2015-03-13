@@ -15,7 +15,7 @@
 
 // scriptr.io parameters
 var SCRIPT_URL = "https://api.scriptr.io/sendNotification?apsws.responseType=json"; // The URL of the scriptr.io script  
-var TOKEN = "VTA1MUQ4RkNBRDpzY3JpcHRyOjExOTAxMTQ3NjY1MDgxMTkyRDA4N0IwMTA4RTVFMzBF"; // Replace with your scriptr.io auth token
+var TOKEN = ""; // Replace with your scriptr.io auth token
 
 var THEME = require('themes/flat/theme');
 var BUTTONS = require('controls/buttons');
