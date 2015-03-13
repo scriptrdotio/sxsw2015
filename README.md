@@ -7,6 +7,6 @@ Available applications:
 * sound_level_management
 * ScriptrdotioNotifications
 
-**Note that these applications have a front-end part (deployed on a Kinoma Create device) and a back-end part (deployed on scriptr.io)
+**Note that these applications have a front-end part (deployed on a Kinoma Create device) and a back-end part (deployed on scriptr.io)**
 
 Check the kinoma sub-folder for more information.
