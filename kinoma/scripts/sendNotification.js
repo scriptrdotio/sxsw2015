@@ -3,7 +3,7 @@
 write=nobody
 execute=authenticated 
   **/ 
- var http = require("http");
+var http = require("http");
 var log = require("log");
 
 function getWeather(location) {

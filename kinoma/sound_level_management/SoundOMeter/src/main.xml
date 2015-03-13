@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<program xmlns="http://www.kinoma.com/kpr/1">
+ 
+        
+    <behavior id="ApplicationBehavior">       
+        <field id="status" value="'closed'" />
+        <field id="wotClients" value="{}" />
+        <method id="onLaunch" params="application">
+            <![CDATA[
+                
+                
+            ]]>
+        </method>
+        
+        <!-- 
+        	This method handles messages received over a websocket connection to wot.io
+        	The expected message format is:
+        	{
+        		"from": "the_device_id_calling", // usually the mobile device
+        		"to": "the_id_of_the_targeted_device", // normally the mobile device 
+        		"credentials": {"user": "a_username_on_apstrata_or_device_id", "token": "corresponding_apstrata_auth_token"},
+        		"operation": "the_operation_to_execute_on_the_current_device",
+        		"params": "parameter_to_pass_to_the_operation_if_any"
+        	}
+        -->
+        <method id="onBusMessage" params="msg">
+        	 <![CDATA[
+        	 	trace(msg + "\n");
+        	 	if(msg) {        	 	
+        	 		
+        	 		var authenticated = false;
+        	 		var jsonMsg = JSON.parse(msg)
+	        	 	application.behavior.setFace(jsonMsg.face);
+	        	 }    	 	
+        	 ]]>
+        </method>
+        
+        <!-- 
+        	This method opens the lock if instructed to do so.
+        	If instruction was sent remotely, the method returns the new status of the door.
+        	If instruction was local, the method tweets about its status 
+        -->
+        <method id="setFace" params="face">
+        	
+        	trace("Changing to new face " + face + "\n");
+        	application.first.url = "./assets/" +  face + ".png";
+        	this.status = face;
+        </method>        
+      
+        <method id="onBusFailure" params="error">
+        	trace(error + "\n");
+        </method>
+        
+         <!-- Factory method to return an instance of Wotclient -->
+        <method id="getWotClient" params="config">
+            <![CDATA[                
+               
+               	var appId = config.application || "echo";      
+               	var key = config.deviceId + appId;         	
+				if (application.behavior.wotClients[key]) {
+					return application.behavior.wotClients[key];
+				}
+				
+				var params = {
+            	
+	            	"user": config.userId || USER_ID,
+	            	"deviceId": config.deviceId,
+	            	"token": config.token || TOKEN,
+	            	"autoConnect": config.autoConnect,
+	            	"application": config.application      	
+            	};
+            
+            	var client = new WotClient(params);
+            	application.behavior.wotClients[key] = client;
+            	return client; 
+            ]]>
+        </method>
+        
+       <!-- Close any remaining websocket connection and unbind -->
+        <method id="onQuit" params="application">
+        	<![CDATA[
+				
+				trace("Door controller client : quitting");
+				var clients = application.behavior.wotClients;
+				for (var key in Object.keys(clients)) {
+					
+					var client = clients[key];
+					client.dropConnection();
+				}
+			]]>
+		</method>
+    </behavior>
+    
+    <!-- Thems, skins and styles -->   
+	<skin id="whiteSkin" color="white"/>    
+    
+    <!-- Minimal layout -->
+    <picture id="FacePicture" top="35" name="facePicture" url="'./assets/happy.png'" active="true" skin="whiteSkin">
+    	<behavior>
+            <method id="onTouchBegan" params="content, id, x, y, ticks">
+                <![CDATA[
+                    switch (application.behavior.status) {
+                    
+                    	case "closed": {
+                    	
+                    		content.url = "./assets/opened-lock.png";
+                    		application.behavior.open();
+                    	};break;
+                    	
+                    	case "opened" : {
+                    	
+                    		content.url = "./assets/closed-lock.png";
+                    		application.behavior.close();
+                    	};break;                    	
+                    }
+                ]]>
+            </method>
+        </behavior>
+    </picture>
+    
+    <script>
+        <![CDATA[
+           	
+           	trace("SoundOMeter starting\n");
+           	
+			// wot.io configuration           
+            var DEVICE_ID = "soundOMeter"; // The identifier of the current device. Hardcoded for simplicity
+            var USER_ID = ""; // The identifier of the user on wot.io
+            var TOKEN = ""; // The authentication token of the user on wot.io            
+            
+            // General initialization
+            var WotClient = require("wotClientModule.js");
+            application.behavior = new ApplicationBehavior();             
+            
+            // Simple layout (diplay face)
+            var face = new FacePicture();
+            application.add(face);
+            
+            // Create the default instance of WotClient and create a websocket connection + binding
+            var config = {            	
+            	"deviceId": DEVICE_ID,
+            	"autoConnect": true
+            };
+            
+           	var wotio = application.behavior.getWotClient(config); 
+           	wotio.createConnection(
+                	
+        		function(result) {        			
+	            	trace("SoundOMeter: connected to bus\n");         		
+	            },
+	                     	
+        		application.behavior.onBusMessage,
+        		application.behavior.onBusFailure
+    		);
+           
+        ]]>
+    </script>
+</program>

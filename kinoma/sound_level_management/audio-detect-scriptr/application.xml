@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application xmlns="http://www.kinoma.com/kpr/application/1" id="audio.detect.scriptr" program="src/main" title="audio.detect.scriptr">
+
+</application>
