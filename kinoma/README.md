@@ -1,3 +1,7 @@
+#How is this folder oraganized
+
+This folder contains multiple sample IoT applications that have "front-end" parts 
+
 ##soundOMeterDemo
 
 This is a simple IoT demo application that implements a collaboration among two Kinoma devices, scriptr.io and wot.io.
