@@ -2,8 +2,7 @@
 
 This folder contains multiple sample IoT applications that have a "front-end" and a "back-end" part. 
 * The front-ends are Kinoma projects that you can import to [Kinoma studio](http://www.kinoma.com/studio/) then further run from there or deploy to a [Kinoma Create](http://www.kinoma.com/create/) device.
-* The back-ends are scriptr.io scripts that need to be deployed to your [scriptr.io](https://www.scriptr.io) account.
-* The scriptr.io scripts are all contained in the "scripts" folder, regardless of the application they are part of.
+* The back-ends are scriptr.io scripts that need to be deployed to your [scriptr.io](https://www.scriptr.io) account. **The scriptr.io scripts are all contained in the "scripts" folder, regardless of the application they are part of.**
  
 #Applications
 
