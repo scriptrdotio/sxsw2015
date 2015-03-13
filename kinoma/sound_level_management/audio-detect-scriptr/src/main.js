@@ -44,7 +44,7 @@ Handler.bind("/gotAudio", {
 	       	// Send the audio peaks to scriptr.io for processing using a Kinoma Message instance
 	        var message = new Message(SCRIPT_URL);
 	        message.method = "POST";
-	        message.requestText =  "soundLevel=" + response.average;
+	        message.requestText =  "soundLevel=" + response.average + "&apsws.time=" + new Date().getTime();
 	        message.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	        message.setRequestHeader("Content-Length", message.requestText.length);
 	        message.setRequestHeader("Authorization", "bearer " +  TOKEN);
