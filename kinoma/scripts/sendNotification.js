@@ -46,6 +46,16 @@ try {
   //channel can be one of email, tweet, push
   var channel = request.parameters.channel;
 
+  // check if location was passed as a parameter, otherwise get location from storage
+  var location = request.parameters.city;
+  if (!location) {
+  	location = storage.global.city;
+  }else {
+    
+    storage.global.lastCity = storage.global.city;
+  	storage.global.city = location;  
+  }
+
   var location = storage.global.city;
   var weatherInfo = getWeather(location);
 
