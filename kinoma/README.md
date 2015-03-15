@@ -6,6 +6,10 @@ This folder contains multiple sample IoT applications that have a "front-end" an
  
 #Applications
 
+* sound_level_management
+* ScriptrdotioNotifications 
+* ScriptrdotioNotifications_variant (a variant of the preceding app)
+
 ##sound_level_management demo
 
 This is a simple IoT demo application that implements a collaboration among two Kinoma devices, scriptr.io and wot.io.
@@ -76,3 +80,7 @@ This is a "kitchen sink" application to demonstrate multiple features of scriptr
 * First, launch the ScriptrNotifications application on the Android device. Select a city from the list.
 * Then, launch the ScriptrdotioNotifications Kinoma application, check one of the radio buttons and press "Send"
 * Verify that you received a notification using the selected channel
+
+##ScriptrdotioNotifications
+
+This a variant of the preceding app. It allows end users to select the city they need weather information on, from the Kinoma app.
