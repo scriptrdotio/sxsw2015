@@ -58,7 +58,19 @@
             <![CDATA[
                 
                 trace("Asking scriptr.io to send a notification through " +  channel + "\n");
-			
+				application.behavior.invokeScriptr("sendNotification?apsws.responseType=json", "channel=" +  channel);	                
+	            ]]>
+        </method>
+        <method id="updatePrefs" params="city">
+            <![CDATA[
+                
+                trace("Asking scriptr.io to update city " +  city + "\n");
+				application.behavior.invokeScriptr("updatePrefs?apsws.responseType=json", "city=" +  city);	                
+	            ]]>
+        </method>        
+         <method id="invokeScriptr" params="url, queryString">
+            <![CDATA[
+                		
 				var container = new Container();
 			    var containerBehavior = new Behavior();
 			    containerBehavior.onComplete = function(container, message, data) {
@@ -68,9 +80,9 @@
 			    container.behavior = containerBehavior;
 		       	
 		       	// Send the audio peaks to scriptr.io for processing using a Kinoma Message instance
-		        var message = new Message(SCRIPT_URL);
+		        var message = new Message(SCRIPT_URL + url);
 		        message.method = "POST";
-		        message.requestText =  "channel=" + channel + "&city=" + city + "&apsws.time=" + new Date().getTime();
+		        message.requestText = queryString  + "&apsws.time=" + new Date().getTime();
 		        message.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		        message.setRequestHeader("Content-Length", message.requestText.length);
 		        message.setRequestHeader("Authorization", "bearer " + TOKEN);
@@ -83,7 +95,7 @@
 	<script><![CDATA[   
 		
 		// scriptr.io parameters
-		var SCRIPT_URL = "https://api.scriptr.io/sendNotification?apsws.responseType=json"; // The URL of the scriptr.io script  
+		var SCRIPT_URL = "https://api.scriptr.io/"; // The URL of the scriptr.io script  
 		var TOKEN = ""; // Replace with your scriptr.io auth token
 		
 		var city = "New york";
@@ -125,7 +137,7 @@
 		<behavior like="MODEL.CommandBehavior"><![CDATA[ 
 			function onQuery(handler, query) {
 				city = query.standard;
-				trace( "\n selected: " + city + "\n");
+				application.behavior.updatePrefs(city);
 			}
 		]]></behavior>
 	</handler>
