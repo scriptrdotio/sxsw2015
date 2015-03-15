@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<program xmlns="http://www.kinoma.com/kpr/1">
+
+	<require id="THEME" path="themes/sample/theme" />
+	<require id="THEME_BUT" path="themes/flat/theme"/>
+	<require id="BUTTONS" path="controls/buttons"/>	
+	<require id="TOOL" path="mobile/tool" />
+	<require id="MODEL" path="mobile/model" />
+	
+	<skin id="graySkin" color="gray"/>
+    <content id="Background" top="0" left="0" bottom="0" right="0" skin="graySkin"/>
+        
+	<container id="MyMenuButton" like="TOOL.MenuButton" top="0" left="0"/>
+ 	
+ 	<container id="TweetButton" top="50" left="30" width="60" height="20" like="BUTTONS.LabeledButton" skin="THEME_BUT.buttonSkin">
+		<behavior like="BUTTONS.LabeledButtonBehavior">
+			<method id="onTap"><![CDATA[
+				channel = "tweet";
+				application.behavior.sendNotification(channel);
+			]]></method>
+		</behavior>
+	</container>
+	
+	<container id="EmailButton" top="80" left="30" width="60" height="20" like="BUTTONS.LabeledButton" skin="THEME_BUT.buttonSkin">
+		<behavior like="BUTTONS.LabeledButtonBehavior">
+			<method id="onTap"><![CDATA[
+				channel = "email";
+				application.behavior.sendNotification(channel);
+			]]></method>
+		</behavior>
+	</container>
+	
+	<container id="PushButton" top="110" left="30" width="60" height="20" like="BUTTONS.LabeledButton" skin="THEME_BUT.buttonSkin">
+		<behavior like="BUTTONS.LabeledButtonBehavior">
+			<method id="onTap"><![CDATA[
+				channel = "push";
+				application.behavior.sendNotification(channel);
+			]]></method>
+		</behavior>
+	</container>
+	
+	<behavior id="ApplicationBehavior">
+        <method id="sendNotification" params="channel">
+            <![CDATA[
+                
+                trace("Asking scriptr.io to send a notification through " +  channel + "\n");
+			
+				var container = new Container();
+			    var containerBehavior = new Behavior();
+			    containerBehavior.onComplete = function(container, message, data) {
+			     	trace("Response from scriptr.io " + data + "\n");
+			    };
+			        
+			    container.behavior = containerBehavior;
+		       	
+		       	// Send the audio peaks to scriptr.io for processing using a Kinoma Message instance
+		        var message = new Message(SCRIPT_URL);
+		        message.method = "POST";
+		        message.requestText =  "channel=" + channel + "&city=" + city + "&apsws.time=" + new Date().getTime();
+		        message.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		        message.setRequestHeader("Content-Length", message.requestText.length);
+		        message.setRequestHeader("Authorization", "bearer " + TOKEN);
+		        container.invoke(message, Message.TEXT); 			
+	                
+	            ]]>
+        </method>
+    </behavior>
+ 	
+	<script><![CDATA[   
+		
+		// scriptr.io parameters
+		var SCRIPT_URL = "https://api.scriptr.io/sendNotification?apsws.responseType=json"; // The URL of the scriptr.io script  
+		var TOKEN = ""; // Replace with your scriptr.io auth token
+		
+		var city = "New york";
+		var standardsMenuData = {
+			action: "/selectStandard?standard=",
+			items: [
+				{ title: "New york", value: "New york" },
+				{ title: "San Fransisco", value: "San Fransisco" },
+				{ title: "Hollywood", value: "Hollywood" },
+				{ title: "Las vegas", value: "Las vegas" },
+				{ title: "Chicago", value: "Chicago" },
+				{ title: "Miami", value: "Miami" },
+				{ title: "Orlando", value: "Orlando" },
+				{ title: "Paris", value: "Paris" },
+				{ title: "London", value: "London" },
+				{ title: "Tokyo", value: "Tokyo" },
+				{ title: "Beirut", value: "Beirut" }
+			],
+			selection: 0,
+		};
+
+		application.behavior = new ApplicationBehavior();
+		var background = new Background();
+		var tweetButton = new TweetButton({name: "tweet"});
+		var emailButton = new EmailButton({name: "email"});
+		var pushButton = new PushButton({name: "push"});
+		application.add( background );
+		var menuButton = new MyMenuButton( standardsMenuData );   
+		application.add( menuButton );
+		application.add(tweetButton);
+		application.add(emailButton);
+		application.add(pushButton);
+	 ]]></script>
+    
+	<!--
+		Note: If you wish to access this.context inside this handler, you will also need to be using MODEL.ApplicationBehavior
+	-->   	
+	<handler path="/selectStandard">
+		<behavior like="MODEL.CommandBehavior"><![CDATA[ 
+			function onQuery(handler, query) {
+				city = query.standard;
+				trace( "\n selected: " + city + "\n");
+			}
+		]]></behavior>
+	</handler>
+</program>
